@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-11]
+        os: [ubuntu-22.04]
         compiler: [gcc, clang]
 
     runs-on: ${{ matrix.os }}
@@ -31,31 +31,16 @@ jobs:
           libsqlite3-dev \
           libssh2-1-dev \
           libcppunit-dev
-    - name: MacOS setup
-      if: runner.os == 'macOS'
-      run: |
-        brew install cppunit gettext openssl libssh2 c-ares sqlite3 \
-          autoconf automake pkg-config libtool
     - name: Setup clang (Linux)
       if: runner.os == 'Linux' && matrix.compiler == 'clang'
       run: |
         echo 'CC=clang-12' >> $GITHUB_ENV
         echo 'CXX=clang++-12' >> $GITHUB_ENV
-    - name: Setup clang (MacOS)
-      if: runner.os == 'macOS' && matrix.compiler == 'clang'
-      run: |
-        echo 'CC=clang' >> $GITHUB_ENV
-        echo 'CXX=clang++' >> $GITHUB_ENV
     - name: Setup gcc (Linux)
       if: runner.os == 'Linux' && matrix.compiler == 'gcc'
       run: |
         echo 'CC=gcc-11' >> $GITHUB_ENV
         echo 'CXX=g++-11' >> $GITHUB_ENV
-    - name: Setup gcc (MacOS)
-      if: runner.os == 'macOS' && matrix.compiler == 'gcc'
-      run: |
-        echo 'CC=gcc' >> $GITHUB_ENV
-        echo 'CXX=g++' >> $GITHUB_ENV
     - name: Libtool
       run: |
         autoreconf -i
@@ -64,19 +49,19 @@ jobs:
       run: |
         ./configure \
           CPPFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address"
-    - name: Configure autotools (macOS)
-      if: runner.os == 'macOS'
-      run: |
-        ./configure \
-          --without-openssl --without-gnutls --with-appletls \
-          --disable-nls \
-          CPPFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address"
     - name: Build aria2
       run: |
         make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" check
+        
+    - name: Step 1 - Create a temporary artifact downloads folder
+      run: mkdir ~/downloads
+        
+    - name: step 2 - Add artifacts to publish to the temp folder
+      run: |
+        cp /home/runner/work/aria2/aria2 ~/downloads
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
       with:
         name: aria2_latest
-        path: /home/runner/work/aria2/aria2
+        path: ~/downloads
