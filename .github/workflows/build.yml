@@ -58,7 +58,7 @@ jobs:
         
     - name: step 2 - Add artifacts to publish to the temp folder
       run: |
-        cp /home/runner/work/aria2/aria2 ~/downloads
+        cp -r /home/runner/work/aria2/aria2 ~/downloads
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
