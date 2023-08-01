@@ -53,15 +53,11 @@ jobs:
       run: |
         make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" check
         
-    - name: Step 1 - Create a temporary artifact downloads folder
-      run: mkdir ~/downloads
-        
-    - name: step 2 - Add artifacts to publish to the temp folder
-      run: |
-        cp -r /home/runner/work/aria2/aria2 ~/downloads
-        
     - name: Upload Artifact
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v3
       with:
         name: aria2_latest
-        path: ~/downloads
+        path: src/aria2c
+        
+    - name: Test Artifact download
+      run: ls -R
