@@ -59,6 +59,7 @@ jobs:
           --with-libssh2 \
           --without-libgcrypt \
           --without-libnettle \
+          --enable-sanitizers
           ARIA2_STATIC=yes \
           CPPFLAGS="-fsanitize=address" \
           LDFLAGS="-fsanitize=address"
