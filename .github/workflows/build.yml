@@ -48,7 +48,20 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         ./configure \
-          CPPFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address"
+          --with-libcares \
+          --without-gnutls \
+          --with-openssl \
+          --with-sqlite3 \
+          --without-libxml2 \
+          --with-libexpat \
+          --with-libz \
+          --without-libgmp \
+          --with-libssh2 \
+          --without-libgcrypt \
+          --without-libnettle \
+          ARIA2_STATIC=yes \
+          CPPFLAGS="-fsanitize=address" \
+          LDFLAGS="-fsanitize=address"
     - name: Build aria2
       run: |
         make -j"$(nproc 2> /dev/null || sysctl -n hw.ncpu)" check
